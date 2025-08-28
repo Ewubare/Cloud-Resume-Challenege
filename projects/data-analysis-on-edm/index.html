@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Data Analysis on EDM</title>
+		<meta name="description" content="Statistical analysis of 32,000 audio clips across 16 EDM subgenres">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="Tega Ewubare">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+
+
+/* Theme colors */
+:root {
+   --color-gray-20: #e0e0e0;
+   --color-gray-50: #C0C0C0;
+   --color-gray-90: #333;
+
+   --background-color: #fff;
+
+   --text-color: var(--color-gray-90);
+   --text-color-link: var(--text-color);
+   --text-color-link-active: var(--text-color);
+   --text-color-link-visited: var(--text-color);
+
+   --syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+   :root {
+   	--color-gray-20: #e0e0e0;
+   	--color-gray-50: #C0C0C0;
+   	--color-gray-90: #dad8d8;
+
+   	/* --text-color is assigned to --color-gray-_ above */
+   	--text-color-link: var(--text-color);
+   	--text-color-link-active: var(--text-color);
+   	--text-color-link-visited: var(--text-color);
+
+   	--background-color: #15202b;
+   }
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+main :first-child {
+	margin-top: 0;
+}
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+}
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+	padding-left: 1.5rem;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	content: "" counter(start-from, decimal-leading-zero) ". ";
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	padding-left: .25em;
+	padding-right: .5em;
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-style: italic;
+}
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">Tega Ewubare</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+<h2 id="packages">Packages</h2>
+<p># List of required packages</p>
+<p>library(tidyverse)
+library(knitr)
+library(paletteer)
+library(factoextra)
+library(ggpubr)
+library(PerformanceAnalytics)
+library(tools)</p>
+<h2 id="data-import">Data Import</h2>
+<p>edm_data = read_csv(&quot;train_data_final.csv&quot;)</p>
+<h2 id="introduction">Introduction</h2>
+<p>Electronic Dance Music (EDM) is a compilation of electronic music
+subgenres that have developed over the last few decades EDM has become a
+global phenomenon, with festivals and concerts drawing millions of fans
+each year. Here in Miami, the Ultra Music Festival is an annual event
+that has become a staple of the city’s music scene and a favourite of
+many students. Given the genre’s popularity, it is essential to
+understand the distinguishing characteristics of each subgenre to more
+quickly identify the subgenre and better appreciate the diversity of
+EDM.</p>
+<h2 id="dataset">Dataset</h2>
+<p>This dataset comes from Sivadithiyan official on Kaggle. To collect this
+dataset, the author used YouTube music mixes and Ableton to extract 2000
+audio clips per subgenre.</p>
+<h2 id="goal">Goal</h2>
+<p>This project aims to explore the audio features of EDM genres using a
+dataset containing 16 different subgenres to determine which feature
+best correlates with the genre to predict genres.</p>
+<p><strong>Research Question</strong></p>
+<p>What are the distinguishing audio features of each EDM genre in the
+dataset?</p>
+<p>There are 131 columns in the dataset. We can use all of them except
+‘label’ for our analysis. The ‘label’ column contains the names of
+subgenres. I will be using the following columns for the analysis:
+rmse_mean, spectral_centroid_mean, spectral_bandwidth_mean,
+rolloff_mean, zero_crossing_rate_mean, chroma_cqt_mean, and
+spectral_contrast_mean. These columns contain audio features that are
+the easiest to interpret and understand.</p>
+<p><strong>Null Hypothesis</strong></p>
+<p>The zero crossing mean rate is not significantly different across the
+EDM genres in the dataset.</p>
+<p><strong>Alternative Hypothesis</strong></p>
+<p>The zero crossing mean rate is significantly different across the EDM
+genres in the dataset.</p>
+<h2 id="variables-and-description">Variables and Description</h2>
+<p>There are 131 columns in the dataset. We can use all of them except
+‘label’ for our analysis. The ‘label’ column contains the names
+ofsubgenre. I will be using the following columns for the analysis:
+rmse_mean, spectral_centroid_mean, spectral_bandwidth_mean,
+rolloff_mean, zero_crossing_rate_mean, chroma_cqt_mean,
+spectral_contrast_mean. These columns contain audio features that are
+the most easy to interpret and understand.</p>
+<ul>
+<li>rmse_mean: Average root mean square error, reflecting the average
+energy of the audio signal.</li>
+<li>rmse_std: Standard deviation of the root mean square error,
+indicating variability in signal energy.</li>
+<li>spectral_centroid_mean: Mean value of the spectral centroid,
+associated with perceived brightness of sound.</li>
+<li>spectral_centroid_std: Standard deviation of the spectral
+centroid, showing brightness variability.</li>
+<li>spectral_bandwidth_mean: Average spectral bandwidth, measuring
+spread around spectral centroid affecting timbre.</li>
+<li>spectral_bandwidth_std: Standard deviation of spectral bandwidth,
+indicating variability in frequency spread.</li>
+<li>rolloff_mean: Mean spectral rolloff point, frequency below which a
+specified percentage of spectral energy is contained.</li>
+<li>rolloff_std: Standard deviation of the spectral rolloff, showing
+variability in frequency distribution cutoff.</li>
+<li>zero_crossing_rate_mean: Average rate at which signal changes
+from positive to negative or vice versa.</li>
+<li>zero_crossing_rate_std: The zero crossing rate’s standard
+deviation indicates variability in textural features.</li>
+<li>mfcc1_mean to mfcc40_mean: Each mean of Mel-frequency cepstral
+coefficients, capturing aspects of sound’s shape and texture.</li>
+<li>mfcc1_std to mfcc40_std: Each standard deviation of Mel-frequency
+cepstral coefficients, describing variability in each coefficient.</li>
+<li>chroma1_mean to chroma12_mean: Mean values for the twelve
+different chroma features relating to the twelve pitch classes.</li>
+<li>chroma1_std to chroma12_std: Standard deviations for the twelve
+chroma features, indicating variability in harmonic content.</li>
+<li>tonnetz1_mean to tonnetz6_mean: Mean values of tonal centroid
+features, capturing harmonic and tonal characteristics.</li>
+<li>tonnetz1_std to tonnetz6_std: The tonal centroid features’
+standard deviations show harmonic variability.</li>
+<li>chroma_cqt_mean: Mean of constant-Q chroma features, robust
+representation of harmonic content over time.</li>
+<li>chroma_cqt_std: The standard deviation of constant-Q chroma
+features indicates variability in harmonic patterns.</li>
+<li>spectral_contrast_mean: Average spectral contrast, measuring
+dynamic range between spectral peaks and valleys.</li>
+<li>spectral_contrast_std: Standard deviation of spectral contrast,
+representing variability in dynamic range across clips.</li>
+<li>label: Categorical variable containing genre labels for classifying
+music into different genres.</li>
+</ul>
+<p>First, let us show the dataset’s subgenres and the number of audio clips
+for each genre.</p>
+<p># The syntax below will create a bar plot of the distribution of subgenres in the dataset</p>
+<p>ggplot(edm_data, aes(x = label, fill = label)) +<br>
+geom_bar(color = &quot;black&quot;) +
+scale_fill_paletteer_d(palette = &quot;ggsci::category20_d3&quot;) +<br>
+labs(title = &quot;Distribution of Subgenres&quot;,
+x = &quot;Genre&quot;,
+y = &quot;Frequency&quot;) +
+theme_classic() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1, face = &quot;bold&quot;),
+axis.text.y = element_text(face = &quot;bold&quot;),
+axis.title = element_text(face = &quot;bold&quot;),
+plot.title = element_text(face = &quot;bold&quot;)) +
+theme(legend.position = &quot;none&quot;)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/rpAhWY1Wo4-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/rpAhWY1Wo4-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/rpAhWY1Wo4-768.png" alt="" width="768" height="768"></picture></p>
+<p>The dataset contains 16 different subgenres, and all 32000 audio clips
+are distributed evenly. This balanced distribution will allow us to
+avoid bias in the analysis.</p>
+<h2 id="overview">Overview</h2>
+<p>Let us look at the means of the audio features for each subgenre to get
+an idea of the distribution of the data.</p>
+<p># The syntax below will create a table of the audio feature means for each subgenre</p>
+<p>feature_means_summary &lt;- edm_data %&gt;%
+group_by(label) %&gt;%
+summarise(
+rsme_mean = mean(rmse_mean),
+spectral_centroid_mean = mean(spectral_centroid_mean),
+spectral_bandwidth_mean = mean(spectral_bandwidth_mean),
+rolloff_mean = mean(rolloff_mean),
+zero_crossing_rate_mean = mean(zero_crossing_rate_mean),
+chroma_cqt_mean = mean(chroma_cqt_mean),
+spectral_contrast_mean = mean(spectral_contrast_mean)
+)</p>
+<p>Visualizing the data will help us understand the distribution of the
+audio features across the different genres.</p>
+<p># The syntax below will create a faceted bar plot of the audio feature means for each subgenre</p>
+<p># Reshape the data from wide to long format and format the labels
+feature_means_long &lt;- feature_means_summary %&gt;%
+pivot_longer(
+cols = -label,
+names_to = &quot;Feature&quot;,
+values_to = &quot;Mean&quot;
+) %&gt;%
+mutate(label = gsub(&quot;_&quot;, &quot; &quot;, label),<br>
+label = tools::toTitleCase(label))</p>
+<p>ggplot(feature_means_long, aes(x = label, y = Mean, fill = label)) +
+geom_col(color = &quot;black&quot;) +
+scale_fill_paletteer_d(palette = &quot;ggsci::category20_d3&quot;) +
+facet_wrap(~ Feature, scales = &quot;free_y&quot;, ncol = 3) +
+labs(title = &quot;Audio Feature Means by Subgenre&quot;,
+x = &quot;&quot;,  # X-axis label removed since it's evident from the labels
+y = &quot;Mean Feature Value&quot;,
+fill = &quot;Subgenre&quot;) +
+theme_minimal() +
+theme(axis.text.x = element_blank())  # Adjust text alignment for better readability</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/GIS-t5gqaC-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/GIS-t5gqaC-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/GIS-t5gqaC-768.png" alt="" width="768" height="768"></picture></p>
+<p>Now, let us see if there is any correlation between the audio features.</p>
+<p># The syntax below will create a correlation matrix of the audio features</p>
+<p># Select the features to include in the correlation matrix
+selected_features &lt;- edm_data %&gt;%
+select(rmse_mean, spectral_centroid_mean, spectral_bandwidth_mean, rolloff_mean,
+zero_crossing_rate_mean, chroma_cqt_mean, spectral_contrast_mean)</p>
+<p>cor_matrix &lt;- cor(selected_features, use = &quot;complete.obs&quot;)
+chart.Correlation(cor_matrix, histogram = TRUE)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/n0HIok9vb6-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/n0HIok9vb6-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/n0HIok9vb6-768.png" alt="" width="768" height="768"></picture></p>
+<p><strong>Correlation Implications</strong></p>
+<p>The very high correlations among spectral centroid, bandwidth, and
+rolloff suggest that these features are closely related descriptors of
+the frequency content of a sound. They are critical for distinguishing
+different types of sounds and could be key features for subgenre
+classification in EDM.</p>
+<p>Since we are focusing on the “zero_crossing_rate_mean” feature, let
+us create a separate plot for this feature to get a better view of the
+data.</p>
+<p># The syntax below will create a bar chart of the zero crossing rate means for each subgenre</p>
+<p># Filter the data for the &quot;zero_crossing_rate_mean&quot; feature
+zerocrossing_feature_data &lt;- feature_means_long %&gt;%
+filter(Feature == &quot;zero_crossing_rate_mean&quot;)</p>
+<p>ggplot(zerocrossing_feature_data, aes(x = label, y = Mean, fill = label)) +
+geom_col(color = &quot;black&quot;) +
+scale_fill_paletteer_d(palette = &quot;ggsci::category20_d3&quot;) +
+labs(title = &quot;Zero Crossing Rate Means by Genre&quot;,
+y = &quot;Mean Value&quot;) +
+theme_minimal() +
+theme(axis.text.x = element_blank())</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/tZCrK2uK0u-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/tZCrK2uK0u-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/tZCrK2uK0u-768.png" alt="" width="768" height="768"></picture></p>
+<p>Viewing the data this way, we can see differences in the mean zero
+crossing rate values across the different genres and some relationships
+between the genres. For example, the “dubstep” subgenre has a much
+higher mean zero crossing rate compared to other genres like “ambient”
+and “lo-fi”. This is likely because of the percussive nature of dubstep
+music, which has a higher rate of zero crossings due to the sharp
+transitions in the waveform compared to the smoother transitions in
+ambient and Lofi music.</p>
+<h2 id="anova-test">ANOVA Test</h2>
+<p>We can perform an Analysis of Variance test to determine if significant
+differences exist in the zero crossing rate means among the different
+genres (ANOVA). ANOVA is used because it is specifically designed to
+compare means across three or more groups. In this case, I am examining
+differences in means across 16 different EDM genres.</p>
+<p>Assumptions of this test:</p>
+<ul>
+<li>
+<p>Population distribution is normal</p>
+</li>
+<li>
+<p>Samples are random and independent</p>
+</li>
+<li>
+<p>Homogeneity of sample variance</p>
+</li>
+</ul>
+<!-- -->
+<p>#The syntax below will run an ANOVA test</p>
+<p># For each feature, run ANOVA test and store results
+anova_features &lt;- list()
+features &lt;- c(&quot;rmse_mean&quot;, &quot;spectral_centroid_mean&quot;, &quot;spectral_bandwidth_mean&quot;,
+&quot;rolloff_mean&quot;, &quot;zero_crossing_rate_mean&quot;, &quot;chroma_cqt_mean&quot;, &quot;spectral_contrast_mean&quot;)</p>
+<p>anova_summaries &lt;- data.frame(Feature = character(), F_value = numeric(), Pr_F = numeric(), stringsAsFactors = FALSE)</p>
+<p>for (feature in features) {
+# Running ANOVA for each feature
+model &lt;- aov(as.formula(paste(feature, &quot;~ label&quot;)), data = edm_data)
+anova_features[[feature]] &lt;- model</p>
+<p># Extract summary
+summary_model &lt;- summary(model)
+anova_summaries &lt;- rbind(anova_summaries, data.frame(
+Feature = feature,
+F_value = summary_model[[1]][&quot;label&quot;, &quot;F value&quot;],
+Pr_F = summary_model[[1]][&quot;label&quot;, &quot;Pr(&gt;F)&quot;]
+))
+}</p>
+<p>lapply(anova_features, summary)</p>
+<p>## $rmse_mean
+##                Df Sum Sq Mean Sq F value Pr(&gt;F)<br>
+## label          15  147.8   9.852    2233 &lt;2e-16 ***
+## Residuals   31984  141.1   0.004<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $spectral_centroid_mean
+##                Df    Sum Sq   Mean Sq F value Pr(&gt;F)<br>
+## label          15 1.462e+10 974769064    3667 &lt;2e-16 ***
+## Residuals   31984 8.502e+09    265815<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $spectral_bandwidth_mean
+##                Df    Sum Sq   Mean Sq F value Pr(&gt;F)<br>
+## label          15 6.741e+09 449385768    3802 &lt;2e-16 ***
+## Residuals   31984 3.780e+09    118183<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $rolloff_mean
+##                Df    Sum Sq   Mean Sq F value Pr(&gt;F)<br>
+## label          15 7.535e+10 5.024e+09    4230 &lt;2e-16 ***
+## Residuals   31984 3.799e+10 1.188e+06<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $zero_crossing_rate_mean
+##                Df Sum Sq Mean Sq F value Pr(&gt;F)<br>
+## label          15  24.69  1.6461    1088 &lt;2e-16 ***
+## Residuals   31984  48.38  0.0015<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $chroma_cqt_mean
+##                Df Sum Sq Mean Sq F value Pr(&gt;F)<br>
+## label          15  222.2  14.813    1631 &lt;2e-16 ***
+## Residuals   31984  290.5   0.009<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1
+##
+## $spectral_contrast_mean
+##                Df Sum Sq Mean Sq F value Pr(&gt;F)<br>
+## label          15  46267  3084.5    3347 &lt;2e-16 ***
+## Residuals   31984  29472     0.9<br>
+## ---
+## Signif. codes:  0 '<em><strong>' 0.001 '</strong>' 0.01 '</em>' 0.05 '.' 0.1 ' ' 1</p>
+<p>Visualizing the results of the ANOVA test.</p>
+<p>#The syntax below will create a bar chart of the F-values for each feature</p>
+<p># Convert p-values to negative log scale for better visualization
+anova_summaries$neg_log_p &lt;- -log10(anova_summaries$Pr_F)</p>
+<p>ggplot(anova_summaries, aes(x = reorder(Feature, F_value), y = F_value, fill = Feature)) +
+geom_col(show.legend = FALSE, color = &quot;black&quot;) +
+scale_fill_paletteer_d(palette = &quot;ggthemes::Superfishel_Stone&quot;) +
+labs(title = &quot;ANOVA F-values by Audio Feature&quot;,
+x = &quot;Feature&quot;,
+y = &quot;F-value&quot;) +
+theme_minimal() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/V4r4P8RifR-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/V4r4P8RifR-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/V4r4P8RifR-768.png" alt="" width="768" height="768"></picture></p>
+<h2 id="anova-analysis">ANOVA Analysis</h2>
+<ul>
+<li>
+<p>rmse_mean : significant difference in energy levels across genres</p>
+<ul>
+<li>
+<p>F value: 2233</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+<li>
+<p>spectral_centroid_mean: significant differences in sound
+brightness across genres</p>
+<ul>
+<li>
+<p>F value: 3667</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+<li>
+<p>spectral_bandwidth_mean: significant differences in spread of
+frequencies around the spectral centroid across genres</p>
+<ul>
+<li>
+<p>F value: 3802</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+<li>
+<p>rolloff_mean: significant differences in the cuttoff frequencies
+across genres</p>
+<ul>
+<li>
+<p>F value: 4230</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+<li>
+<p>zero_crossing_rate_mean: significant differences in the rate of
+signal changes across genres</p>
+<ul>
+<li>
+<p>F value: 1088</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+<li>
+<p>chroma_cqt_mean: significant differences in harmonic content
+across genres</p>
+<ul>
+<li>
+<p>F value: 1631</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>spectral_contrast_mean: significant differences in dynamic range
+across genres</p>
+<ul>
+<li>
+<p>F value: 3347</p>
+</li>
+<li>
+<p>p-value: &lt;2e-16</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="answering-the-research-question">Answering the Research Question</h2>
+<p>The ANOVA results show that all tested audio features significantly vary
+across genres. Features like Spectral Rolloff, Spectral Centroid,
+Spectral Contrast, and Spectral Bandwidth are strong discriminators of
+subgenres, given their high F-values. This could make them potent tools
+for further subgenre classification.</p>
+<p>The zero crossing rate has a lower F-value than other features, but it
+still shows significant differences across genres. This suggests that it
+might be a less powerful discriminator. However, it still contributes to
+subgenre differentiation. Due to this, I will reject the null hypothesis
+and accept the alternative hypothesis that the zero crossing rate is
+significantly different across the EDM genres in the dataset.</p>
+<h2 id="principal-component-analysis">Principal Component Analysis</h2>
+<p>I am not satisfied with the initial findings of this report. Since I aim
+to predict the subgenres accurately, I will use more features for
+further analysis. So far, I only used seven variables that would be the
+most important in determining the subgenre of the song. However, for a
+comprehensive analysis, I will use all 130 variables in the dataset to
+find a statistically relevant pattern in the data that can be used to
+classify the subgenres. With Principal Component Analysis (PCA), I can
+reduce the dimensionality of the data and identify the essential
+features that contribute to the variance in the dataset.</p>
+<p># The syntax below will perform a Principal Component Analysis (PCA) on the dataset to reduce the dimensionality of the data</p>
+<p>numeric_data &lt;- edm_data %&gt;% select(-label)</p>
+<p>scaled_data &lt;- scale(numeric_data)</p>
+<p>pca_result &lt;- prcomp(scaled_data, center = TRUE, scale. = TRUE)</p>
+<p>pca_scores &lt;- data.frame(pca_result$x)</p>
+<p>pca_scores$label &lt;- edm_data$label</p>
+<p>Convert the PCA results to percentages to determine the variance
+explained by each principal component.</p>
+<p># The syntax below will calculate the variance of the principal components</p>
+<p>var_explained &lt;- pca_result$sdev^2 / sum(pca_result$sdev^2) * 100</p>
+<p>pca_var_df &lt;- data.frame(
+PC = 1:length(var_explained),
+Variance = var_explained
+)</p>
+<p>print(pca_var_df)</p>
+<p>##      PC     Variance
+## 1     1 22.241708537
+## 2     2  9.410270212
+## 3     3  5.455589363
+## 4     4  4.179667753
+## 5     5  3.242969720
+## 6     6  2.728870096
+## 7     7  2.438032108
+## 8     8  2.310069758
+## 9     9  2.187634715
+## 10   10  2.105575078
+## 11   11  1.983519539
+## 12   12  1.874906553
+## 13   13  1.839999895
+## 14   14  1.657897058
+## 15   15  1.583060503
+## 16   16  1.336399736
+## 17   17  1.297214587
+## 18   18  1.190170034
+## 19   19  1.145842973
+## 20   20  1.065266401
+## 21   21  1.009450448
+## 22   22  0.948119610
+## 23   23  0.884824402
+## 24   24  0.837927161
+## 25   25  0.808920175
+## 26   26  0.713136975
+## 27   27  0.698434796
+## 28   28  0.645414019
+## 29   29  0.617433427
+## 30   30  0.607238018
+## 31   31  0.594787480
+## 32   32  0.584694510
+## 33   33  0.563448907
+## 34   34  0.536486578
+## 35   35  0.520651267
+## 36   36  0.506975791
+## 37   37  0.488322430
+## 38   38  0.468672139
+## 39   39  0.459485535
+## 40   40  0.454173299
+## 41   41  0.435658893
+## 42   42  0.427098661
+## 43   43  0.423997632
+## 44   44  0.422574450
+## 45   45  0.407041054
+## 46   46  0.390577952
+## 47   47  0.386814952
+## 48   48  0.360549601
+## 49   49  0.356583704
+## 50   50  0.342283483
+## 51   51  0.342053487
+## 52   52  0.324077423
+## 53   53  0.320626787
+## 54   54  0.309220215
+## 55   55  0.306697564
+## 56   56  0.288921412
+## 57   57  0.283639500
+## 58   58  0.278854184
+## 59   59  0.272444759
+## 60   60  0.260874197
+## 61   61  0.256015924
+## 62   62  0.251056485
+## 63   63  0.243029898
+## 64   64  0.239513902
+## 65   65  0.235212977
+## 66   66  0.229045488
+## 67   67  0.222142967
+## 68   68  0.218925643
+## 69   69  0.217339894
+## 70   70  0.206807962
+## 71   71  0.203712137
+## 72   72  0.203334489
+## 73   73  0.201993163
+## 74   74  0.192499625
+## 75   75  0.189594104
+## 76   76  0.184675743
+## 77   77  0.181516346
+## 78   78  0.178898739
+## 79   79  0.176283036
+## 80   80  0.170793059
+## 81   81  0.165448120
+## 82   82  0.164186731
+## 83   83  0.161854447
+## 84   84  0.157840118
+## 85   85  0.155812551
+## 86   86  0.153823000
+## 87   87  0.147934173
+## 88   88  0.147024482
+## 89   89  0.144986240
+## 90   90  0.141733207
+## 91   91  0.138648211
+## 92   92  0.133667637
+## 93   93  0.132690709
+## 94   94  0.128891738
+## 95   95  0.128302014
+## 96   96  0.126875092
+## 97   97  0.125433682
+## 98   98  0.122118495
+## 99   99  0.119257082
+## 100 100  0.116959808
+## 101 101  0.113981532
+## 102 102  0.112052194
+## 103 103  0.110286931
+## 104 104  0.105412261
+## 105 105  0.104631745
+## 106 106  0.104114011
+## 107 107  0.101463043
+## 108 108  0.098096770
+## 109 109  0.096273383
+## 110 110  0.094466437
+## 111 111  0.092699143
+## 112 112  0.091755405
+## 113 113  0.087370065
+## 114 114  0.082380956
+## 115 115  0.076980818
+## 116 116  0.070678842
+## 117 117  0.049535823
+## 118 118  0.043025154
+## 119 119  0.037062458
+## 120 120  0.022335219
+## 121 121  0.021520918
+## 122 122  0.020473731
+## 123 123  0.018426474
+## 124 124  0.014268406
+## 125 125  0.012365810
+## 126 126  0.011945692
+## 127 127  0.009412960
+## 128 128  0.008505942
+## 129 129  0.006218258
+## 130 130  0.002529010</p>
+<p>Using the results of the PCA, a scree plot can be used to observe the
+variance explained by each principal component.</p>
+<p># The syntax below will create a scree plot of the PCA results</p>
+<p># Create a data frame for the variance explained
+var_explained &lt;- data.frame(PC = 1:length(pca_result$sdev),
+Variance = pca_result$sdev^2 / sum(pca_result$sdev^2))</p>
+<p>ggplot(var_explained, aes(x = PC, y = Variance)) +
+geom_line() +
+geom_point() +
+theme_minimal() +
+labs(title = &quot;Scree Plot of PCA&quot;, x = &quot;Principal Component&quot;, y = &quot;Proportion of Variance Explained&quot;)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/hS6rrHxdkj-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/hS6rrHxdkj-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/hS6rrHxdkj-768.png" alt="" width="768" height="768"></picture></p>
+<p>Lets calculate how many principal components are needed to explain 80%,
+85%, 90%, 95%, and 99% of the variance. This will help me determine how
+many principal components to use in a predictive model.</p>
+<p># The syntax below will calculate the number of principal components needed to explain 80%, 85%, 90%, 95%, and 99% of the variance</p>
+<p># PCA result stored in pca_result
+pca_result &lt;- prcomp(scaled_data, center = TRUE, scale. = TRUE)</p>
+<p># Calculate the proportion of variance explained by each PC
+variance_explained &lt;- pca_result$sdev^2 / sum(pca_result$sdev^2)</p>
+<p># Calculate cumulative variance explained
+cumulative_variance &lt;- cumsum(variance_explained)</p>
+<p># Desired levels of explained variance
+levels_of_variance &lt;- c(0.8, 0.85, 0.9, 0.95, 0.99)</p>
+<p># Determine the number of PCs required to reach each level of explained variance
+pcs_needed &lt;- sapply(levels_of_variance, function(x) which(cumulative_variance &gt;= x)[1])</p>
+<p>results_df &lt;- data.frame(
+<code>Variance_Explained</code> = c(&quot;80%&quot;, &quot;85%&quot;, &quot;90%&quot;, &quot;95%&quot;, &quot;99%&quot;),
+<code>Number_of_PCs</code> = pcs_needed
+)</p>
+<p>results_df</p>
+<p>##   Variance_Explained Number_of_PCs
+## 1                80%            32
+## 2                85%            42
+## 3                90%            56
+## 4                95%            78
+## 5                99%           108</p>
+<p>Out of the 130 principal components, the first ten explain 56.30039% of
+the variance in the data.</p>
+<p># The syntax below will create  a scree plot of the PCA results</p>
+<p>fviz_eig(pca_result, addlabels = TRUE, ylim = c(0, 30)) +
+scale_y_continuous(breaks = seq(0, 30, by = 5)) +
+labs(title = &quot;Scree Plot of PCA&quot;,
+x = &quot;Principal Component&quot;,
+y = &quot;Variance Explained (%)&quot;)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/PQ25ZaOHW3-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/PQ25ZaOHW3-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/PQ25ZaOHW3-768.png" alt="" width="768" height="768"></picture></p>
+<p># The syntax below will extract the first 5 principal components and combine them with the original EDM data</p>
+<p>pc_scores &lt;- pca_result$x[, 1:5]</p>
+<p>edm_data_with_pcs &lt;- cbind(edm_data, pc_scores)</p>
+<p># The syntax below will create a scatter plot of the first two principal components with labels wrapped</p>
+<p># Edit the label names
+edm_data_with_pcs &lt;- edm_data_with_pcs %&gt;%
+mutate(label = gsub(&quot;_&quot;, &quot; &quot;, label),<br>
+label = toTitleCase(label))</p>
+<p>ggplot(edm_data_with_pcs, aes(x = PC1, y = PC2, color = label)) +
+geom_point(size = 0.5) +<br>
+scale_color_paletteer_d(palette = &quot;ggsci::category20_d3&quot;) +
+labs(title = &quot;Principal Component 1 vs Pricipal Component 2 by Subgenre&quot;, x = &quot;PC 1&quot;, y = &quot;PC 2&quot;) +
+theme_minimal() +
+facet_wrap(~ label, scales = &quot;free&quot;)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/q4KWaPt9OE-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/q4KWaPt9OE-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/q4KWaPt9OE-768.png" alt="" width="768" height="768"></picture></p>
+<p># The syntax below will create a scatter plot of the first two principal components with all labels</p>
+<p># Plotting PC1 vs PC2
+ggplot(edm_data_with_pcs, aes(x = PC1, y = PC2, color = label)) +
+geom_point(size = 1) +<br>
+theme_minimal() +
+scale_color_paletteer_d(palette = &quot;ggsci::category20_d3&quot;) +
+stat_ellipse(size = 1.5) +
+labs(title = &quot;Principal Component 1 vs Pricipal Component 2 by Subgenre&quot;, x = &quot;PC 1&quot;, y = &quot;PC 2&quot;)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/sfPhshVIfX-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/sfPhshVIfX-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/sfPhshVIfX-768.png" alt="" width="768" height="768"></picture></p>
+<p># The syntax below will create a correlation matrix of the first 5 principal components and the means of the initial 7 audio features</p>
+<p>edm_data_mean &lt;- edm_data_with_pcs %&gt;%
+group_by(label) %&gt;%<br>
+summarise(across(where(is.numeric), mean, na.rm = TRUE))</p>
+<p>selected_columns &lt;- c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;,&quot;rmse_mean&quot;, &quot;spectral_centroid_mean&quot;, &quot;spectral_bandwidth_mean&quot;,
+&quot;rolloff_mean&quot;, &quot;zero_crossing_rate_mean&quot;, &quot;chroma_cqt_mean&quot;, &quot;spectral_contrast_mean&quot; )<br>
+chart.Correlation(edm_data_mean[selected_columns], histogram = TRUE)</p>
+<p><picture><source type="image/avif" srcset="/projects/data-analysis-on-edm/uh1Y4A_7jl-768.avif 768w"><source type="image/webp" srcset="/projects/data-analysis-on-edm/uh1Y4A_7jl-768.webp 768w"><img loading="lazy" decoding="async" src="/projects/data-analysis-on-edm/uh1Y4A_7jl-768.png" alt="" width="768" height="768"></picture></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The PCA results show that this data is robust enough to predict
+subgenres. For the future of this project, machine learning techniques
+such as K-means clustering will be used. A potential use case for a
+model would be for advancing music recommendation systems.
+Recommendation algorithms could suggest songs that align more closely
+with listeners’ preferences, identified through cluster membership.</p>
+<h2 id="citations">Citations</h2>
+<p>Bambooforest. (n.d.). Bambooforest/APY313: Data Science of Culture and
+language. GitHub. <a href="https://github.com/bambooforest/APY313/tree/main">https://github.com/bambooforest/APY313/tree/main</a></p>
+<p>Hvitfeldt E. (2021). paletteer: Comprehensive Collection of Color
+Palettes. version 1.3.0. <a href="https://github.com/EmilHvitfeldt/paletteer">https://github.com/EmilHvitfeldt/paletteer</a></p>
+<p>Kassambara A (2023). <em>ggpubr: ‘ggplot2’ Based Publication Ready Plots</em>.
+R package version 0.6.0, <a href="https://CRAN.R-project.org/package=ggpubr">https://CRAN.R-project.org/package=ggpubr</a>.</p>
+<p>Kassambara A, Mundt F (2020). <em>factoextra: Extract and Visualize the
+Results of Multivariate Data Analyses</em>. R package version 1.0.7,
+<a href="https://CRAN.R-project.org/package=factoextra">https://CRAN.R-project.org/package=factoextra</a>.</p>
+<p>Lafs. (2023, February 20). A brief history of EDM. The Los Angeles Film
+School. <a href="https://www.lafilm.edu/blog/brief-history-edm/">https://www.lafilm.edu/blog/brief-history-edm/</a></p>
+<p>official, S. (2024, April 20). EDM music genres. Kaggle.
+<a href="https://www.kaggle.com/datasets/sivadithiyan/edm-music-genres">https://www.kaggle.com/datasets/sivadithiyan/edm-music-genres</a></p>
+<p>Peterson BG, Carl P (2020). <em>PerformanceAnalytics: Econometric Tools for
+Performance and Risk Analysis</em>. R package version 2.0.4,
+<a href="https://CRAN.R-project.org/package=PerformanceAnalytics">https://CRAN.R-project.org/package=PerformanceAnalytics</a>.</p>
+<p>Hvitfeldt E. (2021). paletteer: Comprehensive Collection of Color
+Palettes. version 1.3.0. <a href="https://github.com/EmilHvitfeldt/paletteer">https://github.com/EmilHvitfeldt/paletteer</a></p>
+<p>Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R,
+Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E,
+Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K,
+Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.”
+<em>Journal of Open Source Software</em>, <em>4</em>(43), 1686.
+<a href="doi:10.21105/joss.01686">doi:10.21105/joss.01686</a> <a href="https://doi.org/10.21105/joss.01686">https://doi.org/10.21105/joss.01686</a>.</p>
+<p>Xie Y (2024). <em>knitr: A General-Purpose Package for Dynamic Report
+Generation in R</em>. R package version 1.46, <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.</p>
+
+
+			</heading-anchors>
+		</main>
+
+		<footer>
+			<p>
+				<em>Built with <a href="https://www.11ty.dev/">Eleventy v3.1.2</a></em>
+			</p>
+		</footer>
+
+		<!-- This page `/projects/data-analysis-on-edm/` was built on 2025-08-28T00:41:27.412Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>
