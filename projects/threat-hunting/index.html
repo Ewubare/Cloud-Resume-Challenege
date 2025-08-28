@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Threat Hunt Scenario Project</title>
+		<meta name="description" content="TOR detection and analysis using Microsoft Defender for Endpoint">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="Tega Ewubare">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+
+
+/* Theme colors */
+:root {
+   --color-gray-20: #e0e0e0;
+   --color-gray-50: #C0C0C0;
+   --color-gray-90: #333;
+
+   --background-color: #fff;
+
+   --text-color: var(--color-gray-90);
+   --text-color-link: var(--text-color);
+   --text-color-link-active: var(--text-color);
+   --text-color-link-visited: var(--text-color);
+
+   --syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+   :root {
+   	--color-gray-20: #e0e0e0;
+   	--color-gray-50: #C0C0C0;
+   	--color-gray-90: #dad8d8;
+
+   	/* --text-color is assigned to --color-gray-_ above */
+   	--text-color-link: var(--text-color);
+   	--text-color-link-active: var(--text-color);
+   	--text-color-link-visited: var(--text-color);
+
+   	--background-color: #15202b;
+   }
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+main :first-child {
+	margin-top: 0;
+}
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+}
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+	padding-left: 1.5rem;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	content: "" counter(start-from, decimal-leading-zero) ". ";
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	padding-left: .25em;
+	padding-right: .5em;
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-style: italic;
+}
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">Tega Ewubare</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+<h1 id="threat-hunt-report-unauthorized-tor-usage">Threat Hunt Report: Unauthorized TOR Usage</h1>
+<ul>
+<li><a href="/projects/threat-hunting/threat-hunting-scenario-tor-event-creation/">Scenario Creation</a></li>
+</ul>
+<h2 id="platforms-and-technology-used">Platforms and Technology Used</h2>
+<ul>
+<li>Windows 10 Virtual Machines (Microsoft Azure)</li>
+<li>EDR Platform: Microsoft Defender for Endpoint</li>
+<li>Kusto Query Language (KQL)</li>
+<li>Tor Browser</li>
+</ul>
+<h2 id="scenario">Scenario</h2>
+<p>Management suspects that some employees may be using TOR browsers to bypass network security controls because recent network logs show unusual encrypted traffic patterns and connections to known TOR entry nodes. Additionally, there have been anonymous reports of employees discussing ways to access restricted sites during work hours. The goal is to detect any TOR usage and analyze related security incidents to mitigate potential risks. If any use of TOR is found, notify management.</p>
+<h3 id="high-level-tor-related-ioc-discovery-plan">High-Level TOR-Related IoC Discovery Plan</h3>
+<ul>
+<li><strong>Check <code>DeviceFileEvents</code></strong> for any <code>tor(.exe)</code> or <code>firefox(.exe)</code> file events.</li>
+<li><strong>Check <code>DeviceProcessEvents</code></strong> for any signs of installation or usage.</li>
+<li><strong>Check <code>DeviceNetworkEvents</code></strong> for any signs of outgoing connections over known TOR ports.</li>
+</ul>
+<hr>
+<h2 id="steps-taken">Steps Taken</h2>
+<h3 id="1-searched-the-devicefileevents-table">1. Searched the <code>DeviceFileEvents</code> Table</h3>
+<p>The DeviceFileEvents table was searched for any file containing the string &quot;tor&quot; to identify installation artefacts and related files. This initial query successfully detected the incident beginning at 3:44:45 PM on July 5, 2025, revealing Tor browser components and a suspicious file named &quot;tor-shopping-list.txt&quot; on device &quot;thl-machine&quot;.</p>
+<p><strong>Query used:</strong></p>
+<pre class="language-kql" tabindex="0"><code class="language-kql">
+DeviceFileEvents
+| where FileName contains "tor"
+| project Timestamp, DeviceName, FileName, ActionType
+</code></pre>
+<picture><source type="image/avif" srcset="/projects/threat-hunting/tsRxCEwTnj-1212.avif 1212w"><source type="image/webp" srcset="/projects/threat-hunting/tsRxCEwTnj-1212.webp 1212w"><img loading="lazy" decoding="async" src="/projects/threat-hunting/tsRxCEwTnj-1212.png" width="1212" alt="image" height="885"></picture>
+<hr>
+<h3 id="2-searched-the-deviceprocessevents-table">2. Searched the <code>DeviceProcessEvents</code> Table</h3>
+<p>The DeviceProcessEvents table was then searched to identify if the Tor program had been installed. This then revealed evidence of a deliberate stealth installation of Tor using a silent installation command.</p>
+<p><strong>Query used:</strong></p>
+<pre class="language-kql" tabindex="0"><code class="language-kql">
+DeviceProcessEvents
+| where ProcessCommandLine contains "tor-browser-windows-x86_64-portable-14.5.4.exe"
+| project Timestamp, DeviceName, FileName, ActionType, ProcessCommandLine, SHA256
+</code></pre>
+<picture><source type="image/avif" srcset="/projects/threat-hunting/80L0AFkdTN-1212.avif 1212w"><source type="image/webp" srcset="/projects/threat-hunting/80L0AFkdTN-1212.webp 1212w"><img loading="lazy" decoding="async" src="/projects/threat-hunting/80L0AFkdTN-1212.png" width="1212" alt="image" height="639"></picture>
+---
+<h3 id="3-searched-the-deviceprocessevents-table-for-tor-browser-execution">3. Searched the <code>DeviceProcessEvents</code> Table for TOR Browser Execution</h3>
+<p>A search of DeviceProcessEvents was conducted to confirm active execution of the core Tor program after it was installed.</p>
+<p><strong>Query used to locate events:</strong></p>
+<pre class="language-kql" tabindex="0"><code class="language-kql">
+DeviceProcessEvents  
+| where FileName == "tor.exe"
+| project Timestamp, DeviceName, FileName, ActionType, ProcessCommandLine, SHA256
+</code></pre>
+<picture><source type="image/avif" srcset="/projects/threat-hunting/DiFhltxgqx-1212.avif 1212w"><source type="image/webp" srcset="/projects/threat-hunting/DiFhltxgqx-1212.webp 1212w"><img loading="lazy" decoding="async" src="/projects/threat-hunting/DiFhltxgqx-1212.png" width="1212" alt="image" height="485"></picture>
+---
+<h3 id="4-searched-the-devicenetworkevents-table-for-tor-network-connections">4. Searched the <code>DeviceNetworkEvents</code> Table for TOR Network Connections</h3>
+<p>Finally the DeviceNetworkEvents table was analyzed to detect Tor network connections from known Tor ports and confirm operational usage. Successful Tor network establishment was confirmed at 3:48:49 PM, with connections to the entry node <code>165.49.20.10:9001</code> and local proxy usage on <code>127.0.0.1:9150</code>, indicating Tor was actively browsed on the network.</p>
+<p><strong>Query used:</strong></p>
+<pre class="language-kql" tabindex="0"><code class="language-kql">
+DeviceNetworkEvents
+| where RemotePort in ("9001","9030","9040","9050","9051","9150")
+| project Timestamp,DeviceName,ActionType,RemoteIP,RemotePort,RemoteUrl,InitiatingProcessFileName
+</code></pre>
+<picture><source type="image/avif" srcset="/projects/threat-hunting/SVPJ7UZ06d-1212.avif 1212w"><source type="image/webp" srcset="/projects/threat-hunting/SVPJ7UZ06d-1212.webp 1212w"><img loading="lazy" decoding="async" src="/projects/threat-hunting/SVPJ7UZ06d-1212.png" width="1212" alt="image" height="530"></picture>
+---
+<h2 id="chronological-event-timeline">Chronological Event Timeline</h2>
+<h3 id="1-file-activity-file-rename">1. File Activity - File Rename</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:44:45Z</code></li>
+<li><strong>Event:</strong> The user &quot;subcontractor&quot; renamed the TOR browser installer file <code>tor-browser-windows-x86_64-portable-14.5.4.exe</code> in the Downloads folder.</li>
+<li><strong>Action:</strong> File rename detected.</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Downloads\tor-browser-windows-x86_64-portable-14.5.4.exe</code></li>
+<li><strong>Significance:</strong> Initial file preparation for TOR browser installation.</li>
+</ul>
+<h3 id="2-process-execution-tor-browser-installer-launch">2. Process Execution - TOR Browser Installer Launch</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:44:58Z</code></li>
+<li><strong>Event:</strong> The user &quot;subcontractor&quot; executed the TOR browser installer.</li>
+<li><strong>Action:</strong> Process creation detected.</li>
+<li><strong>Command:</strong> <code>tor-browser-windows-x86_64-portable-14.5.4.exe</code></li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Downloads\tor-browser-windows-x86_64-portable-14.5.4.exe</code></li>
+<li><strong>SHA256:</strong> <code>5035adc961d7ebae32a175061d102686c00728c750824b3099601259cead8866</code></li>
+<li><strong>Significance:</strong> First execution of TOR browser installer.</li>
+</ul>
+<h3 id="3-file-deletion-installer-cleanup">3. File Deletion - Installer Cleanup</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:44:58Z</code></li>
+<li><strong>Event:</strong> The user &quot;subcontractor&quot; deleted the TOR installer file after extraction.</li>
+<li><strong>Action:</strong> File deletion detected (2 occurrences).</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Downloads\tor-browser-windows-x86_64-portable-14.5.4.exe</code></li>
+<li><strong>Significance:</strong> Cleanup of installation files after extraction.</li>
+</ul>
+<h3 id="4-process-execution-silent-installation">4. Process Execution - Silent Installation</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:48:11Z</code></li>
+<li><strong>Event:</strong> The user &quot;subcontractor&quot; initiated a silent installation of the TOR browser.</li>
+<li><strong>Action:</strong> Process creation detected.</li>
+<li><strong>Command:</strong> <code>tor-browser-windows-x86_64-portable-14.5.4.exe /S</code></li>
+<li><strong>SHA256:</strong> <code>5035adc961d7ebae32a175061d102686c00728c750824b3099601259cead8866</code></li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Downloads\tor-browser-windows-x86_64-portable-14.5.4.exe</code></li>
+<li><strong>Significance:</strong> Silent installation indicates an intent to avoid detection.</li>
+</ul>
+<h3 id="5-file-creation-tor-license-files">5. File Creation - TOR License Files</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:48:28Z</code></li>
+<li><strong>Event:</strong> TOR browser files were created during installation.</li>
+<li><strong>Action:</strong> File creation detected.</li>
+<li><strong>Files Created:</strong>
+<ul>
+<li><code>Torbutton.txt</code></li>
+<li><code>Tor-Launcher.txt</code></li>
+<li><code>tor.txt</code></li>
+</ul>
+</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Desktop\Tor Browser\Browser\TorBrowser\Docs\Licenses\</code></li>
+<li><strong>Significance:</strong> License documentation files.</li>
+</ul>
+<h3 id="6-file-creation-tor-executable">6. File Creation - TOR Executable</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:48:29Z</code></li>
+<li><strong>Event:</strong> Core TOR executable installed.</li>
+<li><strong>Action:</strong> File creation detected.</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe</code></li>
+<li><strong>Significance:</strong> TOR executable ready for use.</li>
+</ul>
+<h3 id="7-network-connection-tor-entry-node">7. Network Connection - TOR Entry Node</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:48:49Z</code></li>
+<li><strong>Event:</strong> Connection established to TOR entry node.</li>
+<li><strong>Action:</strong> Connection success detected.</li>
+<li><strong>Process:</strong> <code>tor.exe</code></li>
+<li><strong>Remote IP:</strong> <code>65.49.20.10</code></li>
+<li><strong>Remote Port:</strong> <code>9001</code></li>
+<li><strong>Remote URL:</strong> <code>https://www.wqyoufhlhiqh.com</code></li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe</code></li>
+<li><strong>Significance:</strong> Successful connection to TOR network.</li>
+</ul>
+<h3 id="8-file-creation-web-application-storage">8. File Creation - Web Application Storage</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:53:01Z</code></li>
+<li><strong>Event:</strong> Web application storage database created.</li>
+<li><strong>Action:</strong> File creation detected.</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Desktop\Tor Browser\Browser\TorBrowser\Data\Browser\profile.default\webappsstore.sqlite</code></li>
+<li><strong>Significance:</strong> Indicates active web browsing.</li>
+</ul>
+<h3 id="9-connection-failure-firefox-to-tor-proxy">9. Connection Failure - Firefox to TOR Proxy</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T15:56:43Z</code></li>
+<li><strong>Event:</strong> Firefox lost connection to TOR proxy.</li>
+<li><strong>Action:</strong> Connection failure detected.</li>
+<li><strong>Process:</strong> <code>firefox.exe</code></li>
+<li><strong>Remote IP:</strong> <code>127.0.0.1</code></li>
+<li><strong>Remote Port:</strong> <code>9150</code></li>
+<li><strong>Significance:</strong> TOR session likely terminated.</li>
+</ul>
+<h3 id="10-file-creation-form-history-database">10. File Creation - Form History Database</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T16:13:11Z</code></li>
+<li><strong>Event:</strong> Form history database created.</li>
+<li><strong>Action:</strong> File creation detected.</li>
+<li><strong>File Path:</strong> <code>C:\Users\subcontractor\Desktop\Tor Browser\Browser\TorBrowser\Data\Browser\profile.default\formhistory.sqlite</code></li>
+<li><strong>Significance:</strong> Evidence of active form usage and browsing.</li>
+</ul>
+<h3 id="11-file-creation-suspicious-document">11. File Creation - Suspicious Document</h3>
+<ul>
+<li><strong>Timestamp:</strong> <code>2025-07-05T16:17:04Z</code></li>
+<li><strong>Event:</strong> Suspicious document and recent file shortcut created.</li>
+<li><strong>Action:</strong> File creation detected.</li>
+<li><strong>Files:</strong>
+<ul>
+<li><code>C:\Users\subcontractor\Documents\tor-shopping-list.txt</code></li>
+<li><code>C:\Users\subcontractor\AppData\Roaming\Microsoft\Windows\Recent\tor-shopping-list.lnk</code></li>
+</ul>
+</li>
+<li><strong>Significance:</strong> Potential planning for illicit marketplace activity.</li>
+</ul>
+<hr>
+<h2 id="summary">Summary</h2>
+<p>An unauthorized TOR browser installation and usage incident was identified on workstation &quot;thl-machine&quot; on July 5, 2025. The user performed a stealth installation and successfully established TOR network connections. There was also the creation of a file that indicated that the employee might have intened to shop using the Tor browser. The activity demonstrates a clear intent to bypass corporate security restrictions and may pose significant operational and data security risks.</p>
+<hr>
+<h2 id="response-taken">Response Taken</h2>
+<p>TOR usage was confirmed on the endpoint <code>thl-machine</code> by the user <code>subcontractor</code>. The device was isolated, and the user's direct manager was notified.</p>
+<hr>
+
+
+			</heading-anchors>
+		</main>
+
+		<footer>
+			<p>
+				<em>Built with <a href="https://www.11ty.dev/">Eleventy v3.1.2</a></em>
+			</p>
+		</footer>
+
+		<!-- This page `/projects/threat-hunting/` was built on 2025-08-28T00:41:27.412Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>
