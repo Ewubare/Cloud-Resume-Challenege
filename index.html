@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Tega Ewubare</title>
+		<meta name="description" content="Cloud Engineer &amp; Cybersecurity Professional specializing in AWS infrastructure, threat hunting, and vulnerability management.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="Tega Ewubare">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+
+
+/* Theme colors */
+:root {
+   --color-gray-20: #e0e0e0;
+   --color-gray-50: #C0C0C0;
+   --color-gray-90: #333;
+
+   --background-color: #fff;
+
+   --text-color: var(--color-gray-90);
+   --text-color-link: var(--text-color);
+   --text-color-link-active: var(--text-color);
+   --text-color-link-visited: var(--text-color);
+
+   --syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+   :root {
+   	--color-gray-20: #e0e0e0;
+   	--color-gray-50: #C0C0C0;
+   	--color-gray-90: #dad8d8;
+
+   	/* --text-color is assigned to --color-gray-_ above */
+   	--text-color-link: var(--text-color);
+   	--text-color-link-active: var(--text-color);
+   	--text-color-link-visited: var(--text-color);
+
+   	--background-color: #15202b;
+   }
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+main :first-child {
+	margin-top: 0;
+}
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+}
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+	padding-left: 1.5rem;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	content: "" counter(start-from, decimal-leading-zero) ". ";
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	padding-left: .25em;
+	padding-right: .5em;
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-style: italic;
+}
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">Tega Ewubare</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/" aria-current="page">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="cloud-engineer-and-cybersecurity-professional">Cloud Engineer & Cybersecurity Professional</h1>
+
+<h2 id="summary">Summary</h2>
+<p>Recent graduate with experience in cybersecurity and system administration. Skilled in threat hunting, compliance auditing and script-based remediation. Eager to apply technical and analytical skills to strengthen organizational security operations.</p>
+
+<p><strong>Email:</strong> <a href="mailto:Ewubare@outlook.com">Ewubare@outlook.com</a><br>
+<strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ewubare/">LinkedIn Profile</a><br>
+<strong>GitHub:</strong> <a href="https://github.com/ewubare">GitHub Profile</a></p>
+
+<h2 id="personal-projects">Personal Projects</h2>
+<p><strong><a href="/projects/vulnerability-management/">Vulnerability Management Project</a></strong> - Automated enterprise security and remediation program</p>
+<p><strong><a href="/projects/threat-hunting/">Threat Hunt Scenario Project</a></strong> - Detection and analysis using Microsoft Defender for Endpoint</p>
+<p><strong><a href="/projects/programmatic-remediations/">Programmatic Remediations</a></strong> - PowerShell scripts for STIG compliance violations</p>
+<p><strong><a href="/projects/data-analysis-on-edm/">Data Analysis on EDM Project</a></strong> - Statistical analysis of 32,000 audio clips across 16 EDM subgenres</p>
+
+<h2 id="professional-projects">Professional Projects</h2>
+<p><strong><a href="https://www.credential.net/3028a4fa-b417-4636-90bc-daccd1654944#acc.6A7nFxm5" target="_blank">The GRAMMYs Project - Website Audience Analysis</a></strong> - Data analysis for The Recording Academy using Python and Tableau</p>
+<p><strong><a href="https://www.credential.net/15eaeed4-61dc-4a94-94e7-52e0a63838d4#acc.61Gwxftj" target="_blank">Intel Project - Data Analysis for Sustainability</a></strong> - Business problem analysis for Intel's Sustainability team using SQL and Tableau</p>
+
+<h2 id="certifications">Certifications</h2>
+<ul>
+<li>CompTIA Security+</li>
+<li>CompTIA Network+</li>
+<li>AWS Certified Cloud Practitioner</li>
+<li>DevOps Bootcamp: Linux Sysadmin & Terraform</li>
+</ul>
+
+<h2 id="education">Education</h2>
+<p><strong>University of Miami</strong> - Bachelor of Science, Data Science and Artificial Intelligence<br>
+<em>Achievements:</em> Provost's Honor Roll, Dean's List<br>
+<em>Focus:</em> Mathematics Minor, Coding for Data Track</p>
+
+<h2 id="additional-skills-and-technologies">Additional Skills & Technologies</h2>
+<p><strong>Cybersecurity & Networking:</strong> Endpoint Detection and Response (EDR), CVE/CWE Management, CVSS Scoring, OWASP Top 10, Risk Prioritization, Vulnerability Remediation, Incident Response, Malware Analysis, Threat Analysis</p>
+<p><strong>Cloud Infrastructure & Automation:</strong> AWS (EC2, S3, IAM, CloudTrail, CloudWatch, KMS), Azure (Active Directory, Security Center, Key Vault, Virtual Machines), CI/CD (Jenkins, GitLab CI/CD, GitHub Actions), Git, Terraform, Docker, Kubernetes, Ansible</p>
+<p><strong>Programming & Scripting:</strong> PowerShell, BASH, Python</p>
+<p><strong>Data Analysis & Visualization:</strong> R, R-Studio, SQL, Tableau, Jupyter Notebooks, Plotly</p>
+<p><strong>Compliance & Frameworks:</strong> NIST Cybersecurity Frameworks, PCI-DSS, GDPR, HIPAA, SOC 2, ISO 27001</p>
+
+<div id="visitor-counter">
+    <p>Visitor count: <span id="counter">Loading...</span></p>
+</div>
+
+<hr>
+
+
+
+			</heading-anchors>
+		</main>
+
+		<footer>
+			<p>
+				<em>Built with <a href="https://www.11ty.dev/">Eleventy v3.1.2</a></em>
+			</p>
+		</footer>
+
+		<!-- This page `/` was built on 2025-08-28T00:41:27.412Z -->
+		<script type="module" src="/dist/cwT86DGLfr.js"></script>
+	</body>
+</html>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+	
+		
+		<url>
+			<loc>https://your-domain.com/blog/firstpost/</loc>
+			<lastmod>2018-05-01</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/blog/secondpost/</loc>
+			<lastmod>2018-07-04</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/blog/thirdpost/</loc>
+			<lastmod>2018-08-24</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/blog/fourthpost/</loc>
+			<lastmod>2018-09-30</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/data-analysis-on-edm/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/programmatic-remediations/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/threat-hunting/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/vulnerability-management/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/about/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/blog/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/tags/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/vulnerability-management/assets/policies/vm-policy-draft/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/vulnerability-management/assets/policies/vm-policy-final/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/projects/threat-hunting/threat-hunting-scenario-tor-event-creation/</loc>
+			<lastmod>2025-08-26</lastmod>
+		</url>
+	
+	
+		
+		<url>
+			<loc>https://your-domain.com/feed/feed.xml</loc>
+			<lastmod>2025-08-28</lastmod>
+		</url>
+	
+</urlset>
