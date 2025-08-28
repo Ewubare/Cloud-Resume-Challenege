@@ -10,8 +10,8 @@ This project combines a static resume site with a serverless API to track visito
 
 ## Architecture
 Architecture
-Frontend: Route 53 -> CloudFront -> S3
-Backend: JavaScript -> API Gateway -> Lambda -> DynamoDB
+- Frontend: Route 53 -> CloudFront -> S3
+- Backend: JavaScript -> API Gateway -> Lambda -> DynamoDB
 
 ## Technologies Used
 ### Frontend
