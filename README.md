@@ -1,11 +1,8 @@
 # Cloud Resume Challenge
 
-A full-stack serverless web application showcasing cloud engineering skills through a personal resume website with real-time visitor tracking.
-
 **Demo:** [Ewubare.com](https://ewubare.com)
 
 ## Project Overview
-
 This project combines a static resume site with a serverless API to track visitors. When someone visits my resume, JavaScript calls an API that increments a counter stored in DynamoDB and displays the current count.
 
 ## Architecture
