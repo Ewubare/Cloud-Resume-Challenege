@@ -6,21 +6,9 @@
 This project combines a static resume site with a serverless API to track visitors. When someone visits my resume, JavaScript calls an API that increments a counter stored in DynamoDB and displays the current count.
 
 ## Architecture
-Architecture
 - Frontend: Route 53 -> CloudFront -> S3
 - Backend: JavaScript -> API Gateway -> Lambda -> DynamoDB
-
-## Technologies Used
-### Frontend
-- **HTML5 & CSS3** 
-- **JavaScript (ES6+)**
-- **Eleventy (11ty)** -Static Site Generator
-
-### Backend
-- **Python** - Lambda function logic
-- **boto3** - AWS SDK for DynamoDB operations
-- **AWS Lambda** - Serverless compute for API logic
-- **Amazon DynamoDB** - NoSQL database for visitor count storage
+  
 
 ## AWS Infrastructure Setup
 - **S3 Bucket** - Create bucket for static hosting with public read access.
